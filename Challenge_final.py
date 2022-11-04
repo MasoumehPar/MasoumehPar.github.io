@@ -2,38 +2,43 @@
 # coding: utf-8
 
 # In[1]:
+### To create a dashboard for the hiring challenge
 
-
+#load the data and fix the headers
 import pandas as pd
 from datetime import datetime
 df = pd.read_excel (r'C:\Users\MParhizkar\OneDrive - Triodos Bank NV\Documents\Myfiles\Documents\Challenge\hiring challenge - fabricated people_data.xlsx')
 df. columns = df. columns. str. replace(' ','_')
 result=df.head(10)
-print(result)
+#print(result)
 
 
 # In[2]:
 
-
+##create the dataframes needed for the graphs
 import numpy as np
 from datetime import datetime
 pd.options.mode.chained_assignment = None  # default='warn'
-df['year']=pd.DatetimeIndex(df['Hire_Date']).year
+df['year']=pd.DatetimeIndex(df['Hire_Date']).year   ## get the year from the Hire_date column
 df=df.astype({'year':'int'})
+##Get the Age
 today = datetime.today()
 df['age'] = df['Birthdate'].apply(
                lambda x: today.year - x.year - 
-               ((today.month, today.day) < (x.month, x.day)) 
-               )
+               ((today.month, today.day) < (x.month, x.day))    
+##Get the employement years               )                                                    
 df13=df[(df.Employement_Status=='Active')]
 df13['Years worked'] = df13['Hire_Date'].apply(
                lambda x: today.year - x.year - 
               ((today.month, today.day) < (x.month, x.day)) 
-            )
+ ##Group by           )
 df1=df.groupby(['year','Employement_Status','Location','Location_City'],as_index = False).count()
-df2 = pd.pivot_table(df1, values='Complete_Name', index=['year','Location','Employement_Status'], aggfunc=np.sum) #to show active/terminated and hq, remote, there is no duplicate in Complete_name but maybe it was better to use id
-df3 = pd.pivot_table(df1, values='Complete_Name', index=['year','Employement_Status'],columns='Location_City', aggfunc=np.sum) #to show active/terminated and location_city
+#to show active/terminated and hq, remote, there is no duplicate in Complete_name but maybe it was better to use id
+ df2 = pd.pivot_table(df1, values='Complete_Name', index=['year','Location','Employement_Status'], aggfunc=np.sum) 
+#to show active/terminated and location_city
+df3 = pd.pivot_table(df1, values='Complete_Name', index=['year','Employement_Status'],columns='Location_City', aggfunc=np.sum) 
 df4=pd.pivot_table(df1, values='Complete_Name', index=['year'],columns=['Employement_Status','Location','Location_City'], aggfunc=np.sum)
+ #Get active and remote
 df5=df1[(df1.Employement_Status=='Active') & (df1.Location=='HQ')]
 df6=df5[['year','Complete_Name']]
 df7=df.groupby(['Location','Gender','Race'],as_index = False).count()
