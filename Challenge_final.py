@@ -40,6 +40,7 @@ df3 = pd.pivot_table(df1, values='Complete_Name', index=['year','Employement_Sta
 df4=pd.pivot_table(df1, values='Complete_Name', index=['year'],columns=['Employement_Status','Location','Location_City'], aggfunc=np.sum)
  #Get active and remote
 df5=df1[(df1.Employement_Status=='Active') & (df1.Location=='HQ')]
+  #create different dataframes for the graphs
 df6=df5[['year','Complete_Name']]
 df7=df.groupby(['Location','Gender','Race'],as_index = False).count()
 df9=df.groupby(['Department','Employement_Status'],as_index = False).count()
@@ -67,7 +68,7 @@ import pandas as pd
 app = Dash(__name__)
 
 server = app.server
-
+##design the layout
 app.layout = html.Div([
 html.Div([
     html.Div(children=[
@@ -87,7 +88,7 @@ html.Div([
         
     ], style={'display': 'flex','flex-direction': 'row', 'width': '49%', 'padding': '0 20'}),
     
-    
+    ##non-interactive graph for employees in each department
     html.Div([
         dcc.Graph(id='bar_chart', figure = px.bar(df12, x="Department", y=["All", "Active"], barmode='group',labels={"value":"Number of total hired"}, 
                                                   title="Employees in each department")
@@ -101,7 +102,7 @@ html.Div([
     Output('hiring-graphic', 'figure'),
     Input('locationname', 'value')
 )
-def update_graph(locationname):
+def update_graph(locationname): ##get the time series
     
     df5=df1[(df1.Location==locationname)]
     
@@ -117,7 +118,7 @@ def update_graph(locationname):
     Output('pie-gender', 'figure'),
     Input('locationname', 'value')
 )
-def update_graph(locationname):
+def update_graph(locationname): ##get the pie charts
     df8=df7[(df7.Location==locationname)]
     fig2 = px.pie(df8, values='Complete_Name', names='Gender', title="Gender diversity")
     fig2.update_layout(title_x=0.5)
@@ -137,13 +138,7 @@ if __name__ == '__main__':
     app.run_server(debug=False)
 
 
-# In[ ]:
 
-
-
-
-
-# In[ ]:
 
 
 
